@@ -1,4 +1,4 @@
--- Copyright 2017 Jeff Foley. All rights reserved.
+-- Copyright 2017-2021 Jeff Foley. All rights reserved.
 -- Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
 
 local url = require("url")
@@ -16,18 +16,16 @@ function vertical(ctx, domain)
         if not ok then
             break
         end
-
-        checkratelimit()
     end
 end
 
 function buildurl(domain, pagenum)
-    local query = "domain:" .. domain
+    local query = "domain:" .. domain .. " -site:www." .. domain
     local params = {
         q=query,
         first=pagenum,
         FORM="PORE",
     }
 
-    return "http://www.bing.com/search?" .. url.build_query_string(params)
+    return "https://www.bing.com/search?" .. url.build_query_string(params)
 end

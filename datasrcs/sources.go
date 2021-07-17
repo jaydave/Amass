@@ -24,14 +24,12 @@ func GetAllSources(sys systems.System) []service.Service {
 		NewDNSDB(sys),
 		NewDNSDumpster(sys),
 		NewNetworksDB(sys),
-		NewPastebin(sys),
 		NewRADb(sys),
 		NewShadowServer(sys),
 		NewTeamCymru(sys),
 		NewTwitter(sys),
 		NewUmbrella(sys),
 		NewURLScan(sys),
-		NewWhoisXML(sys),
 	}
 
 	if scripts, err := sys.Config().AcquireScripts(); err == nil {

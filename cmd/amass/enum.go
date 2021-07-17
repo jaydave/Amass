@@ -57,22 +57,22 @@ type enumArgs struct {
 	Resolvers         stringset.Set
 	Timeout           int
 	Options           struct {
-		Active              bool
-		BruteForcing        bool
-		DemoMode            bool
-		IPs                 bool
-		IPv4                bool
-		IPv6                bool
-		ListSources         bool
-		MonitorResolverRate bool
-		NoAlts              bool
-		NoColor             bool
-		NoLocalDatabase     bool
-		NoRecursive         bool
-		Passive             bool
-		Silent              bool
-		Sources             bool
-		Verbose             bool
+		Active          bool
+		BruteForcing    bool
+		DemoMode        bool
+		IPs             bool
+		IPv4            bool
+		IPv6            bool
+		ListSources     bool
+		NoAlts          bool
+		NoColor         bool
+		NoLocalDatabase bool
+		NoRecursive     bool
+		Passive         bool
+		Share           bool
+		Silent          bool
+		Sources         bool
+		Verbose         bool
 	}
 	Filepaths struct {
 		AllFilePrefix    string
@@ -119,12 +119,12 @@ func defineEnumOptionFlags(enumFlags *flag.FlagSet, args *enumArgs) {
 	enumFlags.BoolVar(&args.Options.IPv4, "ipv4", false, "Show the IPv4 addresses for discovered names")
 	enumFlags.BoolVar(&args.Options.IPv6, "ipv6", false, "Show the IPv6 addresses for discovered names")
 	enumFlags.BoolVar(&args.Options.ListSources, "list", false, "Print the names of all available data sources")
-	enumFlags.BoolVar(&args.Options.MonitorResolverRate, "noresolvrate", true, "Disable resolver rate monitoring")
 	enumFlags.BoolVar(&args.Options.NoAlts, "noalts", false, "Disable generation of altered names")
 	enumFlags.BoolVar(&args.Options.NoColor, "nocolor", false, "Disable colorized output")
 	enumFlags.BoolVar(&args.Options.NoLocalDatabase, "nolocaldb", false, "Disable saving data into a local database")
 	enumFlags.BoolVar(&args.Options.NoRecursive, "norecursive", false, "Turn off recursive brute forcing")
 	enumFlags.BoolVar(&args.Options.Passive, "passive", false, "Disable DNS resolution of names and dependent features")
+	enumFlags.BoolVar(&args.Options.Share, "share", false, "Share findings with data source providers")
 	enumFlags.BoolVar(&args.Options.Silent, "silent", false, "Disable all output during execution")
 	enumFlags.BoolVar(&args.Options.Sources, "src", false, "Print data sources for the discovered names")
 	enumFlags.BoolVar(&args.Options.Verbose, "v", false, "Output status / debug / troubleshooting info")
@@ -247,8 +247,6 @@ func runEnumCommand(clArgs []string) {
 	// Let all the output goroutines know that the enumeration has finished
 	close(done)
 	wg.Wait()
-
-	//e.Graph.DumpGraph()
 	// If necessary, handle graph database migration
 	if !cfg.Passive && len(e.Sys.GraphDatabases()) > 0 {
 		fmt.Fprintf(color.Error, "\n%s\n", green("The enumeration has finished"))
@@ -263,6 +261,10 @@ func runEnumCommand(clArgs []string) {
 					red("The database migration to "), red(g.String()), red(" failed: "), red(err.Error()))
 			}
 		}
+	}
+
+	if cfg.Share {
+		shareFindings(e, cfg)
 	}
 }
 
@@ -504,8 +506,8 @@ func processOutput(ctx context.Context, e *enum.Enumeration, outputs []chan *req
 	// This filter ensures that we only get new names
 	known := filter.NewBloomFilter(1 << 22)
 	// The function that obtains output from the enum and puts it on the channel
-	extract := func() {
-		for _, o := range ExtractOutput(e, known, true) {
+	extract := func(limit int) {
+		for _, o := range ExtractOutput(e, known, true, limit) {
 			if !e.Config.IsDomainInScope(o.Name) {
 				continue
 			}
@@ -516,7 +518,7 @@ func processOutput(ctx context.Context, e *enum.Enumeration, outputs []chan *req
 		}
 	}
 
-	t := time.NewTicker(15 * time.Second)
+	t := time.NewTicker(5 * time.Second)
 	defer t.Stop()
 	for {
 		select {
@@ -524,10 +526,10 @@ func processOutput(ctx context.Context, e *enum.Enumeration, outputs []chan *req
 			return
 		case <-done:
 			// Check one last time
-			extract()
+			extract(0)
 			return
 		case <-t.C:
-			extract()
+			extract(100)
 		}
 	}
 }
@@ -661,6 +663,9 @@ func processEnumInputFiles(args *enumArgs) error {
 
 // Setup the amass enumeration settings
 func (e enumArgs) OverrideConfig(conf *config.Config) error {
+	if e.Options.Share {
+		conf.Share = true
+	}
 	if len(e.Addresses) > 0 {
 		conf.Addresses = e.Addresses
 	}
@@ -705,9 +710,13 @@ func (e enumArgs) OverrideConfig(conf *config.Config) error {
 	}
 	if e.Options.Active {
 		conf.Active = true
+		conf.Passive = false
 	}
 	if e.Options.Passive {
 		conf.Passive = true
+		conf.Active = false
+		conf.BruteForcing = false
+		conf.Alterations = false
 	}
 	if e.Blacklist.Len() > 0 {
 		conf.Blacklist = e.Blacklist.Slice()
@@ -720,9 +729,6 @@ func (e enumArgs) OverrideConfig(conf *config.Config) error {
 	}
 	if e.MaxDNSQueries > 0 {
 		conf.MaxDNSQueries = e.MaxDNSQueries
-	}
-	if !e.Options.MonitorResolverRate {
-		conf.MonitorResolverRate = false
 	}
 
 	if len(e.Included) > 0 {

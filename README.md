@@ -26,9 +26,9 @@ The OWASP Amass Project performs network mapping of attack surfaces and external
 | Technique    | Data Sources |
 |:-------------|:-------------|
 | DNS          | Brute forcing, Reverse DNS sweeping, NSEC zone walking, Zone transfers, FQDN alterations/permutations, FQDN Similarity-based Guessing |
-| Scraping     | Ask, Baidu, Bing, BuiltWith, DNSDumpster, HackerOne, IPv4Info, RapidDNS, Riddler, SiteDossier, Yahoo |
+| Scraping     | Ask, Baidu, Bing, BuiltWith, DNSDumpster, DuckDuckGo, HackerOne, IPv4Info, RapidDNS, Riddler, SiteDossier, Yahoo |
 | Certificates | Active pulls (optional), Censys, CertSpotter, Crtsh, FacebookCT, GoogleCT |
-| APIs         | AlienVault, Anubis, BinaryEdge, BGPView, BufferOver, C99, CIRCL, Cloudflare, CommonCrawl, DNSDB, GitHub, HackerTarget, Mnemonic, NetworksDB, PassiveTotal, Pastebin, RADb, ReconDev, Robtex, SecurityTrails, ShadowServer, Shodan, SonarSearch, Spyse, Sublist3rAPI, TeamCymru, ThreatBook, ThreatCrowd, ThreatMiner, Twitter, Umbrella, URLScan, VirusTotal, WhoisXML, ZETAlytics, ZoomEye |
+| APIs         | AlienVault, Anubis, BinaryEdge, BGPView, BufferOver, C99, Chaos, CIRCL, Cloudflare, CommonCrawl, DNSDB, GitHub, HackerTarget, Hunter, IPinfo, Mnemonic, NetworksDB, PassiveTotal, RADb, ReconDev, Robtex, SecurityTrails, ShadowServer, Shodan, SonarSearch, Spyse, Sublist3rAPI, TeamCymru, ThreatBook, ThreatCrowd, ThreatMiner, Twitter, Umbrella, URLScan, VirusTotal, WhoisXMLAPI, ZETAlytics, ZoomEye |
 | Web Archives | ArchiveIt, ArchiveToday, Wayback |
 
 ----
@@ -60,7 +60,7 @@ sudo snap install amass
 
 1. Install [Docker](https://www.docker.com)
 2. Pull the Docker image by running `docker pull caffix/amass`
-3. Run `docker run -v OUTPUT_DIR_PATH:/.config/amass/ caffix/amass enum -brute -d example.com`
+3. Run `docker run -v OUTPUT_DIR_PATH:/.config/amass/ caffix/amass enum -share -d example.com`
 
 The volume argument allows the Amass graph database to persist between executions and output files to be accessed on the host system. The first field (left of the colon) of the volume option is the amass output directory that is external to Docker, while the second field is the path, internal to Docker, where amass will write the output files.
 
@@ -95,8 +95,8 @@ For a list of all contributors to the OWASP Amass Project please visit our [HALL
 
 ### External Projects Helping Amass Users
 
-[Patrik's Amass data source scripts](https://github.com/PatrikFehrenbach/amass-tools/)
-[amass-to-csv](https://github.com/amroot/amass-to-csv)
+* [Patrik's Amass data source scripts](https://github.com/PatrikFehrenbach/amass-tools/)
+* [amass-to-csv](https://github.com/amroot/amass-to-csv)
 
 ## References [![Bugcrowd LevelUp 0x04](https://img.shields.io/badge/bugcrowd-levelup%200x04-orange.svg)](https://www.youtube.com/watch?v=C-GabM2db9A) [![DEF CON 27 Demo Labs](https://img.shields.io/badge/defcon%2027-demo%20labs-purple.svg)](https://www.defcon.org/html/defcon-27/dc-27-demolabs.html) [![DEF CON 27 Recon Village](https://img.shields.io/badge/defcon%2027-recon%20village-lightgrey.svg)](https://reconvillage.org/) [![DEF CON 28 Red Team Village](https://img.shields.io/badge/defcon%2028-red%20team%20village-red.svg)](https://www.youtube.com/c/RedTeamVillage/featured) [![Bugcrowd LevelUp 0x07](https://img.shields.io/badge/bugcrowd-levelup%200x07-orange.svg)](https://www.twitch.tv/videos/723418873) [![Grayhat 2020](https://img.shields.io/badge/grayhat%202020-bootcamp-lightgrey.svg)](https://www.youtube.com/watch?v=J33JmuQ79tE) [![BeNeLux 2020](https://img.shields.io/badge/owasp%202020-benelux%20days-blue.svg)](https://www.youtube.com/watch?v=fDlKQXRaGl0) [![BSides København 2020](https://img.shields.io/badge/bsides%202020-københavn-red.svg)](https://vimeo.com/481985359) [![ESW 2021](https://img.shields.io/badge/security%20weekly-esw%20219-blue.svg)](https://www.youtube.com/watch?v=fDlKQXRaGl0)
 
@@ -106,23 +106,24 @@ Add it to our ever-growing list of [REFERENCES.md](REFERENCES.md) by forking and
 
 ### Top Mentions
 
-* [Hakluke’s Guide to Amass — How to Use Amass More Effectively for Bug Bounties](https://medium.com/@hakluke/haklukes-guide-to-amass-how-to-use-amass-more-effectively-for-bug-bounties-7c37570b83f7)
+* [SecurityTrails | Introducing the new OWASP Amass Information Sharing Feature: a Big Community Effort to Share Accurate Domain and Subdomain data, for everyone](https://securitytrails.com/blog/introducing-owasp-amass-information-sharing-feature)
+* [WhoisXML API | OWASP Amass and WhoisXML API Are Now Integration Partners](https://main.whoisxmlapi.com/success-stories/cyber-security-solutions/owasp-amass-and-whoisxml-api-are-now-integration-partners)
+* [Intigriti | Hacker tools: Amass – Hunting for Subdomains](https://blog.intigriti.com/2021/06/08/hacker-tools-amass-hunting-for-subdomains)
+* [Hakluke | Guide to Amass — How to Use Amass More Effectively for Bug Bounties](https://medium.com/@hakluke/haklukes-guide-to-amass-how-to-use-amass-more-effectively-for-bug-bounties-7c37570b83f7)
 * [SecurityTrails | OWASP Amass: A Solid Information Gathering Tool](https://securitytrails.com/blog/owasp-amass)
 * [TrustedSec | Upgrade Your Workflow, Part 1: Building OSINT Checklists](https://www.trustedsec.com/blog/upgrade-your-workflow-part-1-building-osint-checklists/)
 * [SANS ISC | Offensive Tools Are For Blue Teams Too](https://isc.sans.edu/forums/diary/Offensive+Tools+Are+For+Blue+Teams+Too/25842/)
 * [Daniel Miessler | amass — Automated Attack Surface Mapping](https://danielmiessler.com/study/amass/)
 * [Dionach | How to Use OWASP Amass: An Extensive Tutorial](https://www.dionach.com/blog/how-to-use-owasp-amass-an-extensive-tutorial/)
 * [Jason Haddix | LevelUp 0x02 - The Bug Hunters Methodology v3(ish)](https://www.youtube.com/watch?v=Qw1nNPiH_Go)
-* [FireEye | Commando VM 2.0: Customization, Containers, and Kali, Oh My!](https://www.fireeye.com/blog/threat-research/2019/08/commando-vm-customization-containers-kali.html)
 * [Hacker Toolbelt | OWASP Amass OSINT Reconnaissance](https://medium.com/hacker-toolbelt/owasp-amass-osint-reconnaissance-9b57d81fb958)
 * [ToolWar | Extreme Subdomain Enumeration/Scanning on Windows : OWASP Amass](https://www.youtube.com/watch?v=mEQnVkSG19M)
 * [Ghost Lulz | YouTube - Bug Bounty Tips: Amass Recon Tool](https://www.youtube.com/watch?v=QRkKzYH4efI)
-* [HackbotOne | 10 Recon Tools For Bug Bounty](https://hackbotone.com/blog/10-recon-tools-for-bug-bounty)
 * [Capt. Meelo | Asset Enumeration: Expanding a Target's Attack Surface](https://captmeelo.com/bugbounty/2019/09/02/asset-enumeration.html)
 * [Noobhax | My Recon Process — DNS Enumeration](https://medium.com/@noobhax/my-recon-process-dns-enumeration-d0e288f81a8a)
 
 ## Licensing [![License](https://img.shields.io/github/license/OWASP/Amass)](https://www.apache.org/licenses/LICENSE-2.0)
 
-This program is free software: you can redistribute it and/or modify it under the terms of the [Apache license](LICENSE). OWASP Amass and any contributions are Copyright © by Jeff Foley 2017-2021. Some subcomponents have seperate licenses.
+This program is free software: you can redistribute it and/or modify it under the terms of the [Apache license](LICENSE). OWASP Amass and any contributions are Copyright © by Jeff Foley 2017-2021. Some subcomponents have separate licenses.
 
 ![Network graph](./images/network_06092018.png "Amass Network Mapping")

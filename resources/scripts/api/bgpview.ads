@@ -39,7 +39,7 @@ function asn(ctx, addr, asn)
     end
 
     local cidrs = netblocks(ctx, asn, cfg.ttl)
-    if (#cidrs == 0) then
+    if (cidrs == nil or #cidrs == 0) then
         return
     end
 
@@ -102,8 +102,8 @@ function asinfo(ctx, asn, ttl)
         return nil
     end
 
-    j = json.decode(resp)
-    if (j == nil or j.status ~= "ok" or j.status_message ~= "Query was successful") then
+    local j = json.decode(resp)
+    if (j == nil or j.data == nil or j.status ~= "ok" or j.status_message ~= "Query was successful") then
         return nil
     end
 
@@ -144,10 +144,10 @@ function netblocks(ctx, asn, ttl)
     end
 
     local netblocks = {}
-    for i, p in pairs(j.data.ipv4_prefixes) do
+    for _, p in pairs(j.data.ipv4_prefixes) do
         table.insert(netblocks, p.ip .. "/" .. tostring(p.cidr))
     end
-    for i, p in pairs(j.data.ipv6_prefixes) do
+    for _, p in pairs(j.data.ipv6_prefixes) do
         table.insert(netblocks, p.ip .. "/" .. tostring(p.cidr))
     end
     return netblocks
@@ -174,7 +174,7 @@ function split(str, delim)
         return result
     end
 
-    for i, match in pairs(matches) do
+    for _, match in pairs(matches) do
         table.insert(result, match)
     end
 
